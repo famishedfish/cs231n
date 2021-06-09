@@ -1,7 +1,8 @@
 from builtins import range
 from builtins import object
+from matplotlib.pyplot import axis
 import numpy as np
-from past.builtins import xrange
+from past.builtins import xrange    # `pip3 install future` :)
 
 
 class KNearestNeighbor(object):
@@ -77,7 +78,7 @@ class KNearestNeighbor(object):
                 #####################################################################
                 # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-                pass
+                dists[i][j] = np.sqrt(np.sum(np.square(X[i]-self.X_train[j])))    # np.sum is much faster than sum, do NOT use sum()!!!
 
                 # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
@@ -100,8 +101,9 @@ class KNearestNeighbor(object):
             # Do not use np.linalg.norm().                                        #
             #######################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
-            pass
+            
+            # dists[i, :] = np.sqrt(sum(np.transpose(((self.X_train - X[i])**2))))  # sum() do addition for each line
+            dists[i, :] = np.sqrt(np.sum((np.square(self.X_train - X[i])), axis=1)) # axis = 1 means add rowwise
 
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
@@ -131,7 +133,11 @@ class KNearestNeighbor(object):
         #########################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-        pass
+        X2 = np.transpose([np.sum(np.square(X), axis=1)])   # 500*1 matrix, X2[0] is an 1-D array
+        Y2 = np.sum(np.square(self.X_train), axis=1)    # 5000*1 vector, Y2[0] is a float number
+        # X2 + Y2 is a 500 * 5000 matrix
+        XY = np.dot(X, self.X_train.T)
+        dists = np.sqrt(X2 + Y2 - 2 * XY)
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
@@ -164,7 +170,7 @@ class KNearestNeighbor(object):
             #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-            pass
+            closest_y = self.y_train[np.argsort(dists[i])[:k]]
 
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
             #########################################################################
@@ -176,7 +182,7 @@ class KNearestNeighbor(object):
             #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-            pass
+            y_pred[i] = np.argmax(np.bincount(closest_y))
 
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
